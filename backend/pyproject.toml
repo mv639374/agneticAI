@@ -71,6 +71,7 @@ dependencies = [
     # Utilities
     "pyyaml>=6.0.2",
     "orjson>=3.10.12",
+    "pypdf",
 ]
 
 [project.optional-dependencies]
