@@ -1,0 +1,98 @@
+# =============================================================================
+# LLM API KEYS
+# =============================================================================
+GROQ_API_KEY=
+GOOGLE_API_KEY=
+
+# =============================================================================
+# DATABASE CONFIGURATION (Cloud PostgreSQL - Free Tier Options)
+# =============================================================================
+# Options: Neon (neon.tech), Supabase (supabase.com), ElephantSQL, Railway
+POSTGRES_HOST=ep-silent****
+POSTGRES_PORT=5432
+POSTGRES_DB=neondb
+POSTGRES_USER=neondb_owner
+POSTGRES_PASSWORD=npg_****
+POSTGRES_SSL_MODE=require
+
+# Full connection string (used by SQLAlchemy)
+DATABASE_URL=postgresql+asyncpg://neondb_owner:npg_***@ep-silent*******.tech/neondb?*****
+
+# =============================================================================
+# REDIS CONFIGURATION (Cloud Redis - Free Tier)
+# =============================================================================
+# Options: Upstash Redis (upstash.com), Redis Cloud (redis.com), Railway
+REDIS_HOST=brave-lo****
+REDIS_PORT=6379
+REDIS_PASSWORD=******
+REDIS_DB=redis_db
+REDIS_SSL=true
+
+# Full Redis URL
+REDIS_URL=redis://default:*****@brave-l****:6379/redis_db
+
+# Cache Settings
+ENABLE_CACHE=true
+CACHE_TTL=3600
+CACHE_HOT_RELOAD_INTERVAL=300
+
+# =============================================================================
+# VECTOR DATABASE CONFIGURATION
+# =============================================================================
+# Choose ONE: pinecone or chromadb
+VECTOR_DB_TYPE=pinecone
+
+# Pinecone (Free tier: 1 index, 100K vectors)
+PINECONE_API_KEY=pcsk_****
+PINECONE_ENVIRONMENT=us-east-1
+PINECONE_INDEX_NAME=agent-memory
+
+
+# ChromaDB (Self-hosted or Chroma Cloud)
+CHROMA_HOST=localhost
+CHROMA_PORT=8000
+CHROMA_COLLECTION_NAME=agent_embeddings
+
+# =============================================================================
+# FASTAPI BACKEND CONFIGURATION
+# =============================================================================
+API_HOST=0.0.0.0
+API_PORT=8000
+API_RELOAD=true
+API_KEY=a_random_32_digit_key___make_yourselves
+
+# CORS Origins (comma-separated)
+CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
+
+# Security
+SECRET_KEY=*****
+# (Generate using: openssl rand -hex 32)
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# =============================================================================
+# AGENT CONFIGURATION
+# =============================================================================
+# LLM Selection (groq or google)
+DEFAULT_LLM_PROVIDER=groq
+GROQ_MODEL_NAME=llama-3.3-70b-versatile
+GOOGLE_MODEL_NAME=gemini-2.0-flash-exp
+
+# Agent Settings
+MAX_AGENT_ITERATIONS=10
+AGENT_TIMEOUT_SECONDS=120
+ENABLE_AGENT_MEMORY=true
+SUPERVISOR_MODEL=llama-3.3-70b-versatile
+
+# =============================================================================
+# LOGGING & MONITORING
+# =============================================================================
+LOG_LEVEL=INFO
+LOG_FORMAT=json
+ENABLE_STRUCTURED_LOGGING=true
+
+# =============================================================================
+# DEVELOPMENT SETTINGS
+# =============================================================================
+ENVIRONMENT=development
+DEBUG=true
