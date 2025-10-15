@@ -24,6 +24,8 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 from sqlalchemy import desc
 from sqlalchemy.util import LRUCache
 
+from dotenv import load_dotenv
+load_dotenv() 
 
 class Settings(BaseSettings):
     """
@@ -49,10 +51,10 @@ class Settings(BaseSettings):
     )
     DEBUG: bool = Field(
         default=True,
-        description="Enable debug mode (verbose logging, auto-reload)"
+        description="Enable debug mode (verbose, logging, auto-reload)"
     )
     API_HOST: str = Field(default="0.0.0.0", description="API server host")
-    API_PORT: str = Field(default=8000, description="API server port")
+    API_PORT: int = Field(default=8000, description="API server port")
 
 
     #--------------------------- LLM Provider Settings ---------------------------
@@ -156,7 +158,7 @@ class Settings(BaseSettings):
 
     # ChromaDB settings
     CHROMA_HOST: Optional[str] = Field(default="localhost")
-    CHROMA_PORT: Optional[str] = Field(default=8000)
+    CHROMA_PORT: Optional[int] = Field(default=8000)
     CHROMA_COLLECTION_NAME: Optional[str] = Field(default="agent_embeddings")
 
 
