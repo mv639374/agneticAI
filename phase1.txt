@@ -1,0 +1,116 @@
+agenticAI/                                  # Root project folder
+├── .gitignore                             # Root gitignore
+├── README.md                              # Main documentation
+├── docker-compose.yml                      # Multi-container orchestration
+│
+├── backend/                               # Python backend (uv environment here)
+│   ├── .venv/                             # Virtual environment (gitignored)
+│   ├── .env                               # Backend environment variables
+│   ├── pyproject.toml                     # Backend dependencies
+│   ├── uv.lock                            # Lock file (auto-generated)
+│   ├── pytest.ini                         # Test configuration
+│   │
+│   ├── app/                               # Source code (standard layout)
+│   │   ├── __init__.py
+│   │   ├── main.py                        # FastAPI entry point
+│   │   ├── config.py                      # Configuration management
+│   │   │
+│   │   ├── mcp/                           # MCP Server Implementation
+│   │   │   ├── __init__.py
+│   │   │   ├── server.py
+│   │   │   ├── tools/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── file_reader.py
+│   │   │   │   ├── database_connector.py
+│   │   │   │   └── api_caller.py
+│   │   │   └── schemas.py
+│   │   │
+│   │   ├── agents/                        # Agent implementations
+│   │   │   ├── __init__.py
+│   │   │   ├── base_agent.py
+│   │   │   ├── supervisor.py
+│   │   │   ├── data_ingestion_agent.py
+│   │   │   ├── analysis_agent.py
+│   │   │   ├── report_agent.py
+│   │   │   ├── query_agent.py
+│   │   │   └── notification_agent.py
+│   │   │
+│   │   ├── graphs/                        # LangGraph workflows
+│   │   │   ├── __init__.py
+│   │   │   ├── state.py
+│   │   │   └── supervisor_graph.py
+│   │   │
+│   │   ├── api/                           # FastAPI routes
+│   │   │   ├── __init__.py
+│   │   │   ├── routes/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── agents.py
+│   │   │   │   ├── conversations.py
+│   │   │   │   └── health.py
+│   │   │   ├── websockets/
+│   │   │   │   ├── __init__.py
+│   │   │   │   └── agent_updates.py
+│   │   │   └── middleware/
+│   │   │       ├── __init__.py
+│   │   │       ├── cors.py
+│   │   │       └── auth.py
+│   │   │
+│   │   ├── db/                            # Database layer
+│   │   │   ├── __init__.py
+│   │   │   ├── postgres.py
+│   │   │   ├── vector_store.py
+│   │   │   └── models.py
+│   │   │
+│   │   └── utils/                         # Utility functions
+│   │       ├── __init__.py
+│   │       ├── logger.py
+│   │       └── prompts.py
+│   │
+│   ├── tests/                             # Backend tests
+│   │   ├── __init__.py
+│   │   ├── conftest.py
+│   │   ├── test_agents/
+│   │   │   ├── __init__.py
+│   │   │   ├── test_supervisor.py
+│   │   │   └── test_data_ingestion.py
+│   │   ├── test_mcp/
+│   │   │   ├── __init__.py
+│   │   │   └── test_tools.py
+│   │   └── test_api/
+│   │       ├── __init__.py
+│   │       └── test_endpoints.py
+│   │
+│   └── data/                              # Local data storage
+│       ├── uploads/
+│       │   └── .gitkeep
+│       └── cache/
+│           └── .gitkeep
+│
+└── frontend/                              # Next.js application
+    ├── .next/                             # Build output (gitignored)
+    ├── node_modules/                      # Dependencies (gitignored)
+    ├── .env.local                         # Frontend environment variables
+    ├── public/
+    ├── src/
+    │   ├── app/
+    │   │   ├── layout.tsx
+    │   │   ├── page.tsx
+    │   │   └── globals.css
+    │   ├── components/
+    │   │   ├── ui/                        # shadcn components
+    │   │   ├── Dashboard.tsx
+    │   │   ├── ChatInterface.tsx
+    │   │   ├── AgentStatus.tsx
+    │   │   └── ExecutionLogs.tsx
+    │   ├── hooks/
+    │   │   ├── useWebSocket.ts
+    │   │   └── useAgentAPI.ts
+    │   ├── lib/
+    │   │   └── utils.ts
+    │   └── types/
+    │       └── agent.ts
+    ├── components.json
+    ├── package.json
+    ├── tsconfig.json
+    ├── tailwind.config.ts
+    └── next.config.ts

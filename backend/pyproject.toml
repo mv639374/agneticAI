@@ -1,0 +1,154 @@
+[project]
+name = "agenticai-backend"
+version = "0.1.0"
+description = "Autonomous Multi-Agent Enterprise Intelligence System - Backend"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [
+    { name = "Your Name", email = "your.email@example.com" }
+]
+license = { text = "MIT" }
+
+dependencies = [
+    # Core FastAPI & ASGI Server
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.32.0",
+    "python-multipart>=0.0.12",
+    
+    # LangChain & LangGraph (Agentic AI)
+    "langchain>=0.3.7",
+    "langchain-community>=0.3.7",
+    "langchain-groq>=0.2.1",
+    "langchain-google-genai>=2.0.5",
+    "langgraph>=0.2.48",
+    "langgraph-checkpoint-postgres>=2.0.6",
+    
+    # MCP (Model Context Protocol)
+    "fastmcp>=0.4.2",
+    "mcp>=1.1.2",
+    
+    # Database & ORM
+    "sqlalchemy>=2.0.36",
+    "psycopg2-binary>=2.9.10",
+    "asyncpg>=0.30.0",
+    "alembic>=1.14.0",
+    
+    # Redis
+    "redis>=5.2.0",
+    "hiredis>=3.0.0",
+    
+    # Vector Databases
+    "pinecone>=5.4.2",
+    "chromadb>=0.5.20",
+    
+    # Embeddings & Vector Search
+    # "sentence-transformers>=3.3.1",
+    # "faiss-cpu>=1.9.0",
+    
+    # WebSockets
+    "websockets>=14.1",
+    "python-socketio>=5.12.0",
+    
+    # Environment & Config
+    "python-dotenv>=1.0.1",
+    "pydantic>=2.10.3",
+    "pydantic-settings>=2.6.1",
+    
+    # HTTP Client
+    "httpx>=0.28.1",
+    "aiofiles>=24.1.0",
+    
+    # Security & Authentication
+    "python-jose[cryptography]>=3.3.0",
+    "passlib[bcrypt]>=1.7.4",
+    "bcrypt>=4.2.1",
+    
+    # Logging & Monitoring
+    "structlog>=24.4.0",
+    "python-json-logger>=3.2.1",
+    
+    # Utilities
+    "pyyaml>=6.0.2",
+    "orjson>=3.10.12",
+]
+
+[project.optional-dependencies]
+dev = [
+    # Testing
+    "pytest>=8.3.4",
+    "pytest-asyncio>=0.24.0",
+    "pytest-cov>=6.0.0",
+    "pytest-mock>=3.14.0",
+    
+    # Code Quality
+    "ruff>=0.8.4",
+    "mypy>=1.13.0",
+    "black>=24.10.0",
+    
+    # Development Tools
+    "ipython>=8.30.0",
+    "ipdb>=0.13.13",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build]
+packages = ["app"]  # This tells Hatch where your Python package is located
+
+[tool.hatch.build.targets.wheel]
+packages = ["app"]  # This tells the wheel builder which directories to include
+
+[tool.uv]
+package = false  # This is an application, not a library
+
+[tool.uv.sources]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--strict-markers",
+    "--cov=src",
+    "--cov-report=term-missing",
+    "--cov-report=html",
+    "--asyncio-mode=auto",
+]
+asyncio_default_fixture_loop_scope = "function"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [
+    ".git",
+    ".venv",
+    "__pycache__",
+    "build",
+    "dist",
+    ".pytest_cache",
+    "htmlcov",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W", "B", "UP"]
+ignore = ["E501", "B008"]  # Line too long, function call in argument defaults
+
+[tool.black]
+line-length = 100
+target-version = ["py312"]
+include = '\.pyi?$'
+
+[tool.mypy]
+python_version = "3.12"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+exclude = [
+    ".venv",
+    "tests",
+]
