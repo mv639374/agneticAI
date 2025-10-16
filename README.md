@@ -5,14 +5,23 @@
 ## **TECH-STACK**
 
 **Languages:** Python (3.12), TypeScript, JavaScript, SQL, Bash
+
 **AI/ML:** LangChain, LangGraph, LangSmith, MCP, GPT-4, Claude, Prompt Engineering, FAISS, RAG
+
 **Backend:** FastAPI, Django, GraphQL, REST APIs, WebSockets, SSE, Celery, RabbitMQ
+
 **Frontend:** React, Next.js, TypeScript, Tailwind CSS, ShadCN
+
 **Databases:** PostgreSQL, Redis, Elasticsearch, Vector DBs
+
 **DevOps:** Docker, Kubernetes, Terraform, Ansible, GitHub Actions (CI/CD)
+
 **Cloud:** GCP (Cloud Run, Cloud Storage, Container Registry)
+
 **Monitoring:** Prometheus, Grafana, ELK Stack (Elasticsearch, Logstash, Kibana)
+
 **Security:** OWASP, JWT, Kong API Gateway, HTTPS, CORS
+
 **Testing:** Pytest, Jest, Load Testing
 
 ---
