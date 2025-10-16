@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
+# Frontend
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# From agenticAI root directory
+cd agenticAI
+
+# Create Next.js app with TypeScript, Tailwind, App Router, ESLint
+npx create-next-app@latest frontend --typescript --tailwind --app --eslint
+
+# When prompted, answer:
+# ✓ Would you like to use `src/` directory? → Yes
+# ✓ Would you like to use App Router? → Yes
+# ✓ Would you like to use Turbopack? → No (optional)
+# ✓ Would you like to customize the import alias? → No
+
+# Navigate to frontend
+cd frontend
+
+# Initialize shadcn/ui
+npx shadcn@latest init
+
+# When prompted, answer:
+# ✓ Preflight checks
+# ✓ Which style would you like to use? → New York (or Default)
+# ✓ Which color would you like to use as base color? → Slate (or your choice)
+# ✓ Would you like to use CSS variables for colors? → Yes
+
+# Install initial shadcn/ui components
+npx shadcn@latest add button card input label textarea badge avatar
+npx shadcn@latest add dropdown-menu popover dialog alert
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### frontend/next.config.ts (Update for standalone output)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```typescript
+import type { NextConfig } from "next";
 
-## Learn More
+const nextConfig: NextConfig = {
+  // Enable standalone output for Docker optimization
+  output: 'standalone',
+  
+  // Disable telemetry
+  telemetry: false,
+  
+  // API proxy configuration (optional - for avoiding CORS in production)
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: process.env.NEXT_PUBLIC_API_URL 
+          ? `${process.env.NEXT_PUBLIC_API_URL}/:path*`
+          : 'http://backend:8000/:path*', // Docker service name
+      },
+    ];
+  },
+};
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+export default nextConfig;
+```

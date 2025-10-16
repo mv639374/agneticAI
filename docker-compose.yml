@@ -84,22 +84,22 @@ services:
   # Redis Local - For development/testing cache
   # Optional: Remove if using cloud Redis exclusively
   # ---------------------------------------------------------------------------
-  redis-local:
-    image: redis:7-alpine
-    container_name: agenticai-redis
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-devredispass}
-    volumes:
-      - redis-data:/data
-    networks:
-      - agenticai-network
-    healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
-      interval: 10s
-      timeout: 3s
-      retries: 5
+  # redis-local:
+  #   image: redis:7-alpine
+  #   container_name: agenticai-redis
+  #   restart: unless-stopped
+  #   ports:
+  #     - "6379:6379"
+  #   command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-devredispass}
+  #   volumes:
+  #     - redis-data:/data
+  #   networks:
+  #     - agenticai-network
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+  #     interval: 10s
+  #     timeout: 3s
+  #     retries: 5
 
 # =============================================================================
 # NETWORKS
@@ -111,6 +111,6 @@ networks:
 # =============================================================================
 # VOLUMES
 # =============================================================================
-volumes:
-  redis-data:
-    driver: local
+# volumes:
+#   redis-data:
+#     driver: local
