@@ -19,14 +19,16 @@ from typing import Optional
 from uuid import uuid4
 
 import sqlalchemy
-
 from sqlalchemy import JSON, DateTime, ForeignKey, Integer, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.postgres import Base
 
 
-# Conversation Model
+# =============================================================================
+# CONVERSATION MODEL
+# =============================================================================
+
 class Conversation(Base):
     """
     Stores conversation threads between users and the multi-agent system.
@@ -42,11 +44,11 @@ class Conversation(Base):
         user_id: User who initiated the conversation (optional for Phase 1)
         created_at: Timestamp when conversation started
         updated_at: Timestamp of last activity
-        metadata: Additional context (user preferences, session info, etc.)
+        context_data: Additional context (renamed from 'metadata' due to SQLAlchemy restriction)
         agent_executions: Related agent execution records
     """
     __tablename__ = "conversations"
-
+    
     # Primary key using UUID for distributed systems compatibility
     id: Mapped[str] = mapped_column(
         String(36),
@@ -54,7 +56,7 @@ class Conversation(Base):
         default=lambda: str(uuid4()),
         comment="Unique conversation identifier"
     )
-
+    
     # Conversation metadata
     title: Mapped[str] = mapped_column(
         String(255),
@@ -62,13 +64,13 @@ class Conversation(Base):
         default="New Conversation",
         comment="Human-readable conversation title"
     )
-
+    
     user_id: Mapped[Optional[str]] = mapped_column(
         String(36),
         nullable=True,
         comment="User who owns this conversation (optional in phase 1)",
     )
-
+    
     # Timestamps with automatic updates
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -76,7 +78,7 @@ class Conversation(Base):
         nullable=False,
         comment="Conversation creation timestamp"
     )
-
+    
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now(),
@@ -84,26 +86,30 @@ class Conversation(Base):
         nullable=False,
         comment="Last update timestamp"
     )
-
+    
     # JSON metadata for flexible storage
-    metadata: Mapped[Optional[dict]] = mapped_column(
+    # NOTE: 'metadata' is a reserved name in SQLAlchemy, so we use 'context_data'
+    context_data: Mapped[Optional[dict]] = mapped_column(
         JSON,
         nullable=True,
         comment="Additional conversation context (preferences, tags, etc.)"
     )
-
+    
     # Relationship: One conversation has many agent executions
     agent_executions: Mapped[list["AgentExecution"]] = relationship(
         "AgentExecution",
         back_populates="conversation",
-        cascade="all, delete-orphan", # Delete executions when conversation is deleted
+        cascade="all, delete-orphan",  # Delete executions when conversation is deleted
     )
-
+    
     def __repr__(self) -> str:
         return f"<Conversation(id={self.id}, title={self.title})>"
 
 
-# Agent Execution Model
+# =============================================================================
+# AGENT EXECUTION MODEL
+# =============================================================================
+
 class AgentExecution(Base):
     """
     Stores individual agent task executions within a conversation.
@@ -120,54 +126,52 @@ class AgentExecution(Base):
     - Debugging agent behavior
     - Cost tracking (LLM token usage)
     """
-
     __tablename__ = "agent_executions"
-
+    
     # Primary key
     id: Mapped[int] = mapped_column(
         Integer,
         primary_key=True,
         autoincrement=True,
-
-        comment="Unique execution indentifier"
+        comment="Unique execution identifier"
     )
-
+    
     # Foreign key to conversation
     conversation_id: Mapped[str] = mapped_column(
         String(36),
-        ForeignKey("conversation.id", ondelete="CASCADE"),
+        ForeignKey("conversations.id", ondelete="CASCADE"),
         nullable=False,
         index=True,  # Index for faster joins
         comment="Parent conversation ID",
     )
-
+    
     # Agent information
     agent_name: Mapped[str] = mapped_column(
         String(100),
         nullable=False,
         index=True,  # Index for querying by agent
-        comment = "Name of the agent that executed this task"
+        comment="Name of the agent that executed this task"
     )
-
+    
     agent_type: Mapped[str] = mapped_column(
         String(50),
         nullable=False,
         comment="Type of agent (supervisor, worker, etc.)"
     )
-
+    
     # Execution data
     input_data: Mapped[dict] = mapped_column(
         JSON,
         nullable=False,
         comment="Input provided to the agent",
     )
-
+    
     output_data: Mapped[Optional[dict]] = mapped_column(
         JSON,
         nullable=True,
         comment="Output/result from the agent",
     )
-
+    
     # Status tracking
     status: Mapped[str] = mapped_column(
         String(20),
@@ -175,13 +179,13 @@ class AgentExecution(Base):
         default="pending",
         comment="Execution status: pending, running, completed, failed"
     )
-
+    
     error_message: Mapped[Optional[str]] = mapped_column(
         Text,
         nullable=True,
         comment="Error message if execution failed"
     )
-
+    
     # Timestamps
     started_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
@@ -209,8 +213,9 @@ class AgentExecution(Base):
         comment="Number of LLM tokens consumed"
     )
     
-    # Metadata
-    metadata: Mapped[Optional[dict]] = mapped_column(
+    # Execution metadata
+    # NOTE: 'metadata' is a reserved name in SQLAlchemy, so we use 'execution_metadata'
+    execution_metadata: Mapped[Optional[dict]] = mapped_column(
         JSON,
         nullable=True,
         comment="Additional execution metadata (model used, temperature, etc.)"
@@ -226,10 +231,10 @@ class AgentExecution(Base):
         return f"<AgentExecution(id={self.id}, agent={self.agent_name}, status={self.status})>"
 
 
-
 # =============================================================================
 # NOTES ON LANGGRAPH CHECKPOINTING
 # =============================================================================
+
 """
 LangGraph Checkpointing Tables:
 
@@ -245,9 +250,9 @@ These tables enable:
 - Time-travel debugging (inspect state at any point)
 
 We don't need to define these models manually - they're handled by:
-    from langgraph.checkpoint.postgres import PostgresSaver
-    
-    checkpointer = PostgresSaver.from_conn_string(DATABASE_URL)
+
+    from langgraph.checkpoint.postgres.aio import AsyncPostgresSaver
+    checkpointer = AsyncPostgresSaver.from_conn_string(DATABASE_URL)
     await checkpointer.setup()  # Creates tables automatically
 
 See implementation in app/graphs/supervisor_graph.py

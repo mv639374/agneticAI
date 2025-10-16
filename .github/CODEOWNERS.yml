@@ -1,0 +1,11 @@
+# Global owners
+* @your-github-username
+
+# Backend
+/backend/ @backend-team-member
+
+# Frontend
+/frontend/ @frontend-team-member
+
+# CI/CD
+/.github/ @devops-team-member

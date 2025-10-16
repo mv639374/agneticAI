@@ -1,0 +1,36 @@
+name: Code Quality
+
+# Run on every push and PR
+on: [push, pull_request]
+
+jobs:
+  # Python linting
+  ruff:
+    name: Ruff (Python Linter)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install ruff
+      - name: Run Ruff
+        run: |
+          cd backend
+          ruff check . --output-format=github
+          ruff format --check .
+  
+  # JavaScript/TypeScript linting
+  eslint:
+    name: ESLint (JS/TS Linter)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install and lint
+        working-directory: frontend
+        run: |
+          npm ci
+          npm run lint

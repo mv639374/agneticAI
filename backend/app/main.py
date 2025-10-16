@@ -21,12 +21,15 @@ from app.config import settings
 from app.utils.logger import bind_context, clear_context, get_logger, setup_logging
 from psycopg.pq import error_message
 
+from app.api.routes import agents, conversations, health
+from app.api.websockets import agent_updates
+
 
 # Logging Setup (must be first)
 setup_logging()
 log = get_logger(__name__)
 
-# Lifespan Context Manager
+# Lifespan Context Managers
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan events for FastAPI application."""
@@ -85,6 +88,26 @@ app.add_middleware(
     allow_methods=["*"],  # Allow all HTTP methods
     allow_headers=["*"],  # Allow all headers
 )
+
+
+# =============================================================================
+# MOUNT ROUTERS
+# =============================================================================
+
+# Health routes (no prefix, direct access)
+app.include_router(health.router, prefix="/api")
+
+# Agent routes
+app.include_router(agents.router, prefix="/api")
+
+# Conversation routes
+app.include_router(conversations.router, prefix="/api")
+
+# WebSocket routes
+app.include_router(agent_updates.router)
+
+log.info("All API routes mounted")
+
 
 
 @app.middleware("http")

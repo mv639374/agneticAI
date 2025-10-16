@@ -1,0 +1,47 @@
+# Run all tests
+pytest
+
+# Run specific test file
+pytest tests/test_mcp/test_file_reader.py
+
+# Run specific test
+pytest tests/test_mcp/test_file_reader.py::TestFileReader::test_read_text_file_success
+
+# Run tests by marker
+pytest -m unit          # Only unit tests
+pytest -m integration   # Only integration tests
+pytest -m agents        # Only agent tests
+
+# Run with coverage
+pytest --cov --cov-report=html
+
+# Run verbose
+pytest -v
+
+# Run and show print statements
+pytest -s
+
+# Run and stop at first failure
+pytest -x
+
+
+
+
+
+
+
+
+cd backend
+
+# Quick test
+pytest -m unit -v
+
+# Full test suite
+./run_tests.sh
+
+# Full suite with E2E tests
+./run_tests.sh --full
+
+# View coverage report
+open htmlcov/index.html  # macOS
+xdg-open htmlcov/index.html  # Linux
