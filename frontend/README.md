@@ -26,7 +26,7 @@ npx shadcn@latest init
 # ✓ Would you like to use CSS variables for colors? → Yes
 
 # Install initial shadcn/ui components
-npx shadcn@latest add button card input label textarea badge avatar
+npx shadcn@latest add button card input label textarea badge avatar scroll-area
 npx shadcn@latest add dropdown-menu popover dialog alert
 ```
 
@@ -58,4 +58,41 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+```
+
+---
+
+### frontend/package.json (Update Scripts)
+
+```json
+{
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  }
+}
+```
+
+---
+
+### Create directory structure
+
+```bash
+# From frontend/ directory
+mkdir -p src/types
+mkdir -p src/lib
+mkdir -p src/hooks
+mkdir -p src/components
+
+# Create the files we discussed above
+touch src/types/agent.ts
+touch src/lib/api.ts
+touch src/hooks/useWebSocket.ts
+touch src/hooks/useAgentAPI.ts
+touch src/components/AgentStatus.tsx
+touch src/components/ChatInterface.tsx
+touch src/components/ExecutionLogs.tsx
+touch src/components/Dashboard.tsx
 ```
