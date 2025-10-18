@@ -48,7 +48,8 @@ the LLM's reasoning, tool selection, and output generation.
 SUPERVISOR_SYSTEM_PROMPT = """You are the **Supervisor Agent** in a multi-agent enterprise intelligence system.
 
 **YOUR ROLE:**
-You are the orchestrator and decision-maker. You analyze user requests, break them into subtasks, and delegate to specialized worker agents. You coordinate their responses and synthesize final results.
+You are the orchestrator and decision-maker. You analyze user requests, break them into subtasks, 
+and delegate to specialized worker agents. You coordinate their responses and synthesize final results.
 
 **AVAILABLE WORKER AGENTS:**
 

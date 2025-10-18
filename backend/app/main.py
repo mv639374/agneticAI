@@ -8,32 +8,76 @@ This is the main FastAPI application that:
 2. Configures middleware (CORS, request logging, error handling)
 3. Mounts API routes
 4. Provides health check endpoint
+
+----------------------------------------------------------------------
+
+Order of Execution:
+
+The route mounting happens during the module import phase (which is why it logs first), but the actual route handling code doesn't execute until after the lifespan's startup completes. The order in the file doesn't determine execution order - Python first executes all module-level code (including route registrations), then runs the lifespan when the server starts.
+
+This is why you see:
+
+"All API routes mounted" (during import)
+"Application starting" (when lifespan starts)
+Database/Redis initialization
+"Application startup complete" (after lifespan's yield)
+
+The routes are registered early, but they can't be used until the lifespan's startup completes.
+
+
 """
 
+# ============================================================================
+# STEP 1: Suppress warnings FIRST - before ANY other imports
+# ============================================================================
+import warnings
+import logging
 
+# Suppress ALL warnings (most aggressive approach)
+warnings.simplefilter("ignore")
+
+# Or be more specific but catch custom warning classes too
+warnings.filterwarnings("ignore")
+
+# Disable SQLAlchemy logging
+logging.getLogger('sqlalchemy.engine').disabled = True
+logging.getLogger('sqlalchemy.engine.Engine').disabled = True
+
+
+# ============================================================================
+# STEP 2: Now import everything else
+# ============================================================================
 import uuid
+import time
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from app.config import settings
-from app.utils.logger import bind_context, clear_context, get_logger, setup_logging
-from psycopg.pq import error_message
-
+from app.utils.logger import bind_context, clear_context, get_logger, setup_logging 
+from psycopg.pq import error_message  
 from app.api.routes import agents, conversations, health
 from app.api.websockets import agent_updates
 
-
 # Logging Setup (must be first)
-setup_logging()
+# setup_logging()
 log = get_logger(__name__)
+STARTUP_TIME = None
 
-# Lifespan Context Managers
+
+# Lifespan Context Managers (It manages application's lifecycle and manages resources)
+# Mitigates the older @app.on_event('startup') and @app.on_event('shutdown'), Because
+# More structured and maintainable, Better error handling and built in async/await support.
+# Cleaner Code: Groups related startup/shutdown logic together
+# Testability: Makes it easier to test startup/shutdown behavior
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan events for FastAPI application."""
     # Startup
+    global STARTUP_TIME
+    startup_start = time.time()
+    
     log.info("Application starting", environment=settings.ENVIRONMENT, debug=settings.DEBUG)
     
     # Initialize databases
@@ -55,11 +99,20 @@ async def lifespan(app: FastAPI):
     
     log.info("All database connections initialized")
     
+    # Calculate and display startup time
+    STARTUP_TIME = time.time() - startup_start
+    
+    # Print startup time immediately after initialization completes
+    print(f"\n{'='*80}")
+    print(f"🚀 Application startup completed in {STARTUP_TIME:.2f} seconds")
+    print(f"{'='*80}\n")
+    
+    
     yield  # Application runs here
+    # yield Marks the boundary between startup and shutdown.
     
     # Shutdown
     log.info("Application shutting down")
-    
     from app.db.postgres import close_database
     from app.db.redis_cache import close_cache
     from app.db.vector_store import close_vector_store
@@ -67,6 +120,7 @@ async def lifespan(app: FastAPI):
     await close_database()
     await close_cache()
     await close_vector_store()
+
 
 
 # FastAPI App Initialization
@@ -166,25 +220,7 @@ async def logging_middleware(request: Request, call_next):
         clear_context()
 
 
-# Health Check Endpoint
-@app.get(
-    "/api/health",
-    tags=["Health"],
-    summary="Health check endpoint",
-    response_description="Service health status",
-)
-async def health_check():
-    """
-    Health check endpoint for monitoring and load balancers.
 
-    Returns:
-        dict: Service status and metadata
-    """
-    return {
-        "status": "healthy",
-        "environment": settings.ENVIRONMENT,
-        "version": "0.1.0",
-    }
 
 
 @app.get(
@@ -214,7 +250,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 
     This catches all exceptions that aren't handled elsewhere and:
     1. Logs the error with full context
-    2. Returns aa consistent error response
+    2. Returns a consistent error response
     3. Prevents sensitive information leakage
     """
     log.error(
@@ -233,6 +269,9 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
+# Allows you to run the application directly 
+# The if __name__ == "__main__": part ensures this code only runs when 
+# the file is executed directly, not when it's imported as a module.
 if __name__ == "__main__":
     import uvicorn
 
@@ -244,16 +283,8 @@ if __name__ == "__main__":
         log_level=settings.LOG_LEVEL.lower(),
     )
 
-
-
-
-
-
-
-@app.get("/")
-def root():
-    return {"status":"chal rha hai bhai!"}
-
-@app.get("/api/health")
-def health_check():
-    return {"status":"OK"}
+# Uvicorn is a web server. It handles network communication - receiving 
+# requests from client applications such as users' browsers and sending 
+# responses to them. It communicates with FastAPI using the Asynchronous 
+# Server Gateway Interface (ASGI), a standard API for Python web servers 
+# that run asynchronous code.

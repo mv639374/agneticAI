@@ -61,7 +61,7 @@ def get_embedding_model():
     else:
         # Groq doesn't provide embeddings API, so we use sentence-transformers locally
         # This is faster and doesn't consume API quota
-        from langchain_community.embeddings import HuggingFaceEmbeddings
+        from langchain_huggingface import HuggingFaceEmbeddings
         
         return HuggingFaceEmbeddings(
             model_name="sentence-transformers/all-MiniLM-L6-v2",

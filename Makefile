@@ -2,7 +2,7 @@
 
 run-api:
 	@echo "Starting backend..."
-	@cd backend && uv run uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+	cd backend && uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 run-web:
 	@echo "Starting frontend..."

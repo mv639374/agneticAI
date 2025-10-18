@@ -229,3 +229,5 @@ celerybeat.pid
 # Backup files
 *.backup
 *.bak
+
+plan.ipynb
